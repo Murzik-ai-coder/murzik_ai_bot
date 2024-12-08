@@ -1,7 +1,8 @@
 from telebot import *
 from groq import Groq
-
 import json
+import AI
+import sound
 
 with open('config.json') as f:
     d = json.load(f)
@@ -15,27 +16,37 @@ client = Groq(
 
 @bot.message_handler(commands=['start'])
 def start(message):
-
     bot.send_message(message.chat.id, 'Привет')
+    mode = None
+
+@bot.message_handler(commands=['home'])
+def start(message):
+    bot.send_message(message.chat.id, 'Привет')
+    mode = None
+
+mode = None
+
+@bot.message_handler(commands=['gemini'])
+def AI_start(message):
+    global mode
+    mode = "Gemini"
+    bot.send_message(message.chat.id, 'Теперь я буду отправлять сообщения в модель Gemini')
+
+@bot.message_handler(commands=['sound'])
+def sound_start(message):
+    global mode
+    mode = "Sound"
+    bot.send_message(message.chat.id, 'Теперь я буду отправлять сообщения в модель Sound')
 
 @bot.message_handler()
-def AI(message):
-    try:
-        question = message.text.strip()
-        chat_completion = client.chat.completions.create(
-            messages=[
-                {
-                    "role": "user",
-                    "content": question,
-                }
+def chat(message):
+    if mode == None:
+        bot.send_message(message.chat.id, 'выбери режим /gemini или /sound')
+    elif mode == "Gemini":
+        AI.AI(message,client,bot)
+    elif mode == "Sound":
+        sound.Sound(message,bot)
 
-            ],
-            model="gemma2-9b-it",
-            temperature = 1,
-            stream=False,
-        )
-        bot.send_message(message.chat.id,chat_completion.choices[0].message.content)
-    except Exception as err:
-        bot.send_message(message.chat.id,"Ошибка : "+ str(err)[:50])
+
 
 bot.polling(none_stop=True)
