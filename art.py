@@ -4,7 +4,7 @@ import time
 import requests
 
 
-def generate(IAM_TOKEN, prompt):
+def generate(IAM_TOKEN, prompt, bot, chat_id):
     URL = "https://llm.api.cloud.yandex.net/foundationModels/v1/imageGenerationAsync"
     # Building a request
     data = {
@@ -38,8 +38,13 @@ def generate(IAM_TOKEN, prompt):
 
     id = response.json()["id"]
 
+    msg = None
+
     for i in range(30):
         print(f"iteration {i}")
+        if not msg is None:
+            bot.delete_message(chat_id, msg.id)
+        msg = bot.send_message(chat_id, f'Генерирую {i}')
         time.sleep(1)
 
         r = requests.get(f"https://llm.api.cloud.yandex.net:443/operations/{id}",headers={
@@ -50,5 +55,7 @@ def generate(IAM_TOKEN, prompt):
             if not json["done"]:
                 continue
             im = json["response"]["image"]
+            if not msg is None:
+                bot.delete_message(chat_id, msg.id)
             return base64.b64decode(im)
         return []

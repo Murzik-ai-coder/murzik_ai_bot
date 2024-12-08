@@ -45,15 +45,15 @@ def art_start(message):
 
 @bot.message_handler()
 def chat(message):
-    if not (message.chat.id in mode) or mode[message.chat.id] is None:
-        bot.send_message(message.chat.id, 'выбери режим /gemini или /art')
-    elif mode[message.chat.id] == "Gemini":
+    chat_id = message.chat.id
+    if not (chat_id in mode) or mode[chat_id] is None:
+        bot.send_message(chat_id, 'выбери режим /gemini или /art')
+    elif mode[chat_id] == "Gemini":
         AI.AI(message,client,bot)
-    elif mode[message.chat.id] == "Sound":
+    elif mode[chat_id] == "Sound":
         sound.Sound(message,bot)
-    elif mode[message.chat.id] == "Art":
-        bytes = art.generate(yandex_art_token, message.text.strip())
-        bot.send_photo(message.chat.id,bytes)
-
+    elif mode[chat_id] == "Art":
+        bytes = art.generate(yandex_art_token, message.text.strip(),bot,chat_id)
+        bot.send_photo(chat_id, bytes)
 
 bot.polling(none_stop=True)
