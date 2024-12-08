@@ -30,7 +30,7 @@ def generate(IAM_TOKEN, prompt, bot, chat_id):
         URL,
         headers={
             "Accept": "application/json",
-            "Authorization": f"Bearer {IAM_TOKEN}"
+            "Authorization": f"Api-key {IAM_TOKEN}"
         },
         json=data,
     )
@@ -48,7 +48,7 @@ def generate(IAM_TOKEN, prompt, bot, chat_id):
         time.sleep(1)
 
         r = requests.get(f"https://llm.api.cloud.yandex.net:443/operations/{id}",headers={
-            "Authorization": f"Bearer {IAM_TOKEN}"
+            "Authorization": f"Api-key {IAM_TOKEN}"
         })
         if r.status_code == 200:
             json = r.json()
