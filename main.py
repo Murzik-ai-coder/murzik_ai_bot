@@ -39,7 +39,7 @@ def sound_start(message):
     bot.send_message(message.chat.id, 'Теперь я буду отправлять сообщения в модель Sound')
 
 @bot.message_handler(commands=['art'])
-def sound_start(message):
+def art_start(message):
     mode[message.chat.id] = "Art"
     bot.send_message(message.chat.id, 'Теперь я буду отправлять сообщения в модель Yandex Art')
 
