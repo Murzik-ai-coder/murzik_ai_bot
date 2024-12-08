@@ -17,34 +17,32 @@ client = Groq(
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.send_message(message.chat.id, 'Привет')
-    mode = None
+    mode[message.chat.id] = None
 
 @bot.message_handler(commands=['home'])
 def start(message):
     bot.send_message(message.chat.id, 'Привет')
-    mode = None
+    mode[message.chat.id] = None
 
-mode = None
+mode = {}
 
 @bot.message_handler(commands=['gemini'])
 def AI_start(message):
-    global mode
-    mode = "Gemini"
+    mode[message.chat.id] = "Gemini"
     bot.send_message(message.chat.id, 'Теперь я буду отправлять сообщения в модель Gemini')
 
 @bot.message_handler(commands=['sound'])
 def sound_start(message):
-    global mode
-    mode = "Sound"
+    mode[message.chat.id] = "Sound"
     bot.send_message(message.chat.id, 'Теперь я буду отправлять сообщения в модель Sound')
 
 @bot.message_handler()
 def chat(message):
-    if mode == None:
+    if not (message.chat.id in mode) or mode[message.chat.id] is None:
         bot.send_message(message.chat.id, 'выбери режим /gemini или /sound')
-    elif mode == "Gemini":
+    elif mode[message.chat.id] == "Gemini":
         AI.AI(message,client,bot)
-    elif mode == "Sound":
+    elif mode[message.chat.id] == "Sound":
         sound.Sound(message,bot)
 
 
