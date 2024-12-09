@@ -1,23 +1,32 @@
 from telebot import *
-from groq import Groq
+
+import requests
+
+def AI(message,bot,IAM_TOKEN):
+
+    data = {
+      "modelUri": "gpt://b1g68uo7ch9fbmg0rq8e/yandexgpt/rc",
+      "completionOptions": {
+        "stream": False,
+        "temperature": 1
+
+      },
+      "messages": [
+
+        {
+          "role": "user",
+          "text": message.text #"Ламинат подойдет для укладке на кухне или в детской комнате – он не боиться влаги и механических повреждений благодаря защитному слою из облицованных меламиновых пленок толщиной 0,2 мм и обработанным воском замкам."
+        }
+      ]
+    }
 
 
-def AI(message,client,bot):
-    try:
-        question = message.text.strip()
-        chat_completion = client.chat.completions.create(
-            messages=[
-                {
-                    "role": "user",
-                    "content": question,
-                }
-
-            ],
-            model="gemma2-9b-it",
-            temperature = 1,
-            stream=False,
-        )
-        bot.send_message(message.chat.id,chat_completion.choices[0].message.content)
-    except Exception as err:
-        bot.send_message(message.chat.id,"Ошибка : "+ str(err)[:50])
-
+    response = requests.post(
+        "https://llm.api.cloud.yandex.net/foundationModels/v1/completion",
+        headers={
+            "Accept": "application/json",
+            "Authorization": f"Api-key {IAM_TOKEN}"
+        },
+        json=data,
+    ).json()
+    bot.send_message(message.chat.id, response["result"]["alternatives"][0]["message"]["text"])
